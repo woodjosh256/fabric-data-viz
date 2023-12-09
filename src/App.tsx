@@ -1,35 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, {useEffect, useState} from 'react'
 import './App.css'
+import {getFabricData} from "./csv-parse.ts";
+import {FabricTable} from "./fabric-table.tsx";
+import {FabricChart} from "./FabricChart.tsx";
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const [metric, setMetric] = useState(false);
+
+    useEffect(() => {
+        getFabricData();
+    }, [])
+
+    return (
+        <div className={'flex flex-col'}>
+            <FabricChart metric={metric} fabrics={getFabricData()} chartableAttributes={["fabricWeight", "tearStrengthWarp", "tearStrengthFill", "averageTearStrength", "waterproof", "abrasion"]} />
+            <FabricTable metric={metric} setMetric={setMetric} fabrics={getFabricData()} />
+        </div>
+    )
 }
 
 export default App
