@@ -29,6 +29,8 @@ const titleMap = {
     laminatedMaterial: 'Laminated Material',
     handFeel: 'Hand Feel',
     recycled: 'Recycled Material',
+    colorsAvailable: 'Available Colors',
+    printable: 'Good for Dye Sublimation Printing',
 };
 
 export const FabricModal = (props: FabricModalProps) => {
@@ -53,7 +55,7 @@ export const FabricModal = (props: FabricModalProps) => {
                     </Typography>
                     <Grid container spacing={1}>
                         {Object.entries(props.fabric).map(([key, value]) => (
-                            key != 'id' && (<Grid item xs={6} key={key}>
+                            key != 'id' && key != 'colorCount' && (<Grid item xs={6} key={key}>
                                 <Typography variant="subtitle1"><strong>{titleMap[key]}</strong></Typography>
                                 <Typography variant="body1">{value.toString()}</Typography>
                             </Grid>)

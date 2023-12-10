@@ -34,7 +34,8 @@ const makeAttrTitleCase = (attrName: string) => {
         "tearStrengthFill": "Fill Tear Strength",
         "averageTearStrength": "Combined Tear Strength",
         "waterproof": "Waterproof Rating",
-        "abrasion": "Abrasion Resistance"
+        "abrasion": "Abrasion Resistance",
+        "colorCount": "Number of Colors"
     }
 
     return prettifiedAttributes[attrName];

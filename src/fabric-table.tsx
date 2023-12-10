@@ -45,6 +45,9 @@ export const FabricTable = (props: FabricTableProps) => {
         { field: 'laminatedMaterial', headerName: 'Laminate', width: 80 },
         { field: 'handFeel', headerName: 'Hand Feel', width: 90 },
         { field: 'recycled', headerName: 'Recycled', width: 90 },
+        { field: 'colorsAvailable', headerName: 'Available Colors', width: 300 },
+        { field: 'printable', headerName: 'Polyester face (good for sublimation printing)', width: 200 },
+        { field: 'colorCount', headerName: '# of Colors Available', width: 200 }
     ]
     // const VISIBLE_COLUMNS = ['line', 'name', 'fabricWeight', 'abrasion', 'averageTearStrength', 'waterproof', 'recycled'];
 
@@ -63,6 +66,12 @@ export const FabricTable = (props: FabricTableProps) => {
                       hideFooter={true}
                       disableColumnFilter={true}
                       disableColumnMenu={true}
+                      getRowHeight={() => 'auto'}
+                      sx={{
+                          '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
+                          '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
+                          '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
+                      }}
                       initialState={{
                           columns: {
                               columnVisibilityModel: {
@@ -75,7 +84,10 @@ export const FabricTable = (props: FabricTableProps) => {
                                   filmBacking: false,
                                   carbonOffset: false,
                                   laminatedMaterial: false,
-                                  handFeel: false
+                                  handFeel: false,
+                                  colorsAvailable: false,
+                                  printable: false,
+                                  colorCount: false
                               }
                           }
                       }}
