@@ -174,7 +174,7 @@ export const FabricChart = (props: FabricChartProps) => {
                     pinch: {
                         enabled: false
                     },
-                    mode: 'xy',
+                    mode: 'y',
                 },
                 limits: {
                     x: {min: 'original', max: 'original'},
@@ -207,6 +207,7 @@ export const FabricChart = (props: FabricChartProps) => {
                               disabled={true}
                     />
                 </div>
+                <p className={'text-center'}>Scroll to zoom. Click on data point for more info.</p>
                 <Scatter data={data} options={chartOptions}/>
             </div>
         </div>
