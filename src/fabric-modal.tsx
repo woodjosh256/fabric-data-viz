@@ -54,7 +54,7 @@ export const FabricModal = (props: FabricModalProps) => {
                     <Grid container spacing={1}>
                         {Object.entries(props.fabric).map(([key, value]) => (
                             key != 'id' && (<Grid item xs={6} key={key}>
-                                <Typography variant="subtitle1">{titleMap[key]}</Typography>
+                                <Typography variant="subtitle1"><strong>{titleMap[key]}</strong></Typography>
                                 <Typography variant="body1">{value.toString()}</Typography>
                             </Grid>)
                         ))}
