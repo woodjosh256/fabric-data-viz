@@ -1,11 +1,16 @@
 import React, {useState} from "react";
 import {Fabric} from "./csv-parse.ts";
 import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {Scatter} from "react-chartjs-2";
+import {Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Tooltip} from "chart.js";
+
+ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 interface FabricChartProps {
     fabrics: Fabric[];
     chartableAttributes: string[];
     metric: boolean;
+    openFabricModal: (fabric: Fabric) => void;
 }
 
 interface SelectorProps {
@@ -18,43 +23,43 @@ interface SelectorProps {
 
 let unsafe_selector_counter = 0;
 
+const makeAttrTitleCase = (attrName: string) => {
+    const prettifiedAttributes = {
+        "fabricWeight": "Fabric Weight",
+        "tearStrengthWarp": "Warp Tear Strength",
+        "tearStrengthFill": "Fill Tear Strength",
+        "averageTearStrength": "Combined Tear Strength",
+        "waterproof": "Waterproof Rating",
+        "abrasion": "Abrasion Resistance"
+    }
+
+    return prettifiedAttributes[attrName];
+}
+
+export const getUnits = (attrName: string, metric: boolean) => {
+    const units = {
+        "fabricWeight": metric ? "g/m²" : "oz/yd²",
+        "tearStrengthWarp": metric ? "N" : "lbs",
+        "tearStrengthFill": metric ? "N" : "lbs",
+        "averageTearStrength": metric ? "N" : "lbs",
+        "waterproof": metric ? "bar" : "psi",
+        "abrasion": "cycles"
+    }
+    if (attrName in units) {
+        return units[attrName];
+    } else {
+        return false;
+    }
+}
+
 const Selector = (props: SelectorProps) => {
     unsafe_selector_counter += 1;
     const labelId = `input-label-${unsafe_selector_counter}`;
     const selectId = `select-${unsafe_selector_counter}`;
 
-    const makeAttrTitleCase = (attrName: string) => {
-        const prettifiedAttributes = {
-            "fabricWeight": "Fabric Weight",
-            "tearStrengthWarp": "Warp Tear Strength",
-            "tearStrengthFill": "Fill Tear Strength",
-            "averageTearStrength": "Combined Tear Strength",
-            "waterproof": "Waterproof Rating",
-            "abrasion": "Abrasion Resistance"
-        }
-
-        return prettifiedAttributes[attrName];
-    }
-
-    const getUnits = (attrName: string, metric: boolean) => {
-        const units = {
-            "fabricWeight": metric ? "g/m²" : "oz/yd²",
-            "tearStrengthWarp": metric ? "N" : "lbs",
-            "tearStrengthFill": metric ? "N" : "lbs",
-            "averageTearStrength": metric ? "N" : "lbs",
-            "waterproof": metric ? "bar" : "psi",
-            "abrasion": "cycles"
-        }
-        return units[attrName];
-    }
-
-    const getAttrText = (attrName: string, metric: boolean) => {
-        return `${makeAttrTitleCase(attrName)} (${getUnits(attrName, metric)})`
-    }
-
     return (
         <Box sx={{
-            minWidth: 200,
+            minWidth: 250,
             m: 2
         }}>
             <FormControl fullWidth>
@@ -68,7 +73,7 @@ const Selector = (props: SelectorProps) => {
                 >
                     {props.attributes.map((attribute, index) => (
                         <MenuItem value={attribute} key={index}>
-                            {getAttrText(attribute, props.metric)}
+                            {makeAttrTitleCase(attribute)}
                         </MenuItem>
                     ))}
                 </Select>
@@ -77,26 +82,99 @@ const Selector = (props: SelectorProps) => {
     )
 }
 
+function Pallet() {
+    const colors = ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"];
+    this.current = 0;
+
+    this.getNext = () => {
+        const color = colors[this.current];
+        this.current += 1;
+        return color;
+    }
+}
+
+
 export const FabricChart = (props: FabricChartProps) => {
     const [indAttr, setIndAttr] = useState("fabricWeight");
     const [depAttr, setDepAttr] = useState("abrasion")
 
+    const pallet = new Pallet();
+
+    const groupedByLine = props.fabrics.reduce((grouped, fabric) => {
+        if (!grouped[fabric.line]) {
+            grouped[fabric.line] = [];
+        }
+        grouped[fabric.line].push(fabric);
+        return grouped;
+    }, {});
+
+    const data = {
+        datasets: Object.keys(groupedByLine).map(line => {
+            return {
+                label: line,
+                data: groupedByLine[line].map((fabric) => ({
+                    x: fabric[indAttr],
+                    y: fabric[depAttr],
+                    fabric: fabric
+                })),
+                backgroundColor: pallet.getNext()
+            }
+        })
+    }
+
+    const chartOptions = {
+        scales: {
+            x: {
+                beginAtZero: true
+            },
+            y: {
+                beginAtZero: true
+            }
+        },
+        onClick: (event, elements, chart) => {
+            if (elements.length > 0) {
+                const firstElement = elements[0];
+                const datasetIndex = firstElement.datasetIndex;
+                const dataIndex = firstElement.index;
+                const dataset = chart.data.datasets[datasetIndex];
+                const dataPoint = dataset.data[dataIndex];
+
+                props.openFabricModal(dataPoint.fabric);
+            }
+        },
+        plugins: {
+            tooltip: {
+                enabled: true,
+                callbacks: {
+                    label: (context) => { return context.raw.fabric.name; }
+                },
+            }
+        }
+    }
+
     return (
-        <div className={'flex flex-col'}>
-            <p>chart here</p>
-            <div className={'flex flex-row'}>
-                <Selector attributes={props.chartableAttributes}
-                          setAttribute={(event: SelectChangeEvent) => { setIndAttr(event.target.value); }}
-                          currentAttribute={indAttr}
-                          label={"X Axis"}
-                          metric={props.metric}
-                />
-                <Selector attributes={props.chartableAttributes}
-                          setAttribute={(event: SelectChangeEvent) => { setDepAttr(event.target.value); }}
-                          currentAttribute={depAttr}
-                          label={"Y Axis"}
-                          metric={props.metric}
-                />
+        <div className={'flex flex-col items-center p-2'}>
+            <div className={'flex flex-col max-w-4xl'}>
+                <div className={'flex flex-row items-center'}>
+                    <Selector attributes={props.chartableAttributes}
+                              setAttribute={(event: SelectChangeEvent) => {
+                                  setDepAttr(event.target.value);
+                              }}
+                              currentAttribute={depAttr}
+                              label={"Y Axis"}
+                              metric={props.metric}
+                    />
+                    <p>vs</p>
+                    <Selector attributes={props.chartableAttributes}
+                              setAttribute={(event: SelectChangeEvent) => {
+                                  setIndAttr(event.target.value);
+                              }}
+                              currentAttribute={indAttr}
+                              label={"X Axis"}
+                              metric={props.metric}
+                    />
+                </div>
+                <Scatter data={data} options={chartOptions}/>
             </div>
         </div>
     )
