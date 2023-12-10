@@ -3,8 +3,9 @@ import {Fabric} from "./csv-parse.ts";
 import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import {Scatter} from "react-chartjs-2";
 import {Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Tooltip} from "chart.js";
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, zoomPlugin);
 
 interface FabricChartProps {
     fabrics: Fabric[];
@@ -19,6 +20,7 @@ interface SelectorProps {
     currentAttribute: string;
     label: string;
     metric: boolean;
+    disabled?: boolean;
 }
 
 let unsafe_selector_counter = 0;
@@ -70,6 +72,7 @@ const Selector = (props: SelectorProps) => {
                     value={props.currentAttribute}
                     label={props.label}
                     onChange={props.setAttribute}
+                    disabled={props.disabled}
                 >
                     {props.attributes.map((attribute, index) => (
                         <MenuItem value={attribute} key={index}>
@@ -125,12 +128,21 @@ export const FabricChart = (props: FabricChartProps) => {
     const chartOptions = {
         scales: {
             x: {
-                beginAtZero: true
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: `${makeAttrTitleCase(indAttr)} (${getUnits(indAttr, props.metric)})`
+                }
             },
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: `${makeAttrTitleCase(depAttr)} (${getUnits(depAttr, props.metric)})`
+                }
             }
         },
+        responsive: true,
         onClick: (event, elements, chart) => {
             if (elements.length > 0) {
                 const firstElement = elements[0];
@@ -148,14 +160,32 @@ export const FabricChart = (props: FabricChartProps) => {
                 callbacks: {
                     label: (context) => { return context.raw.fabric.name; }
                 },
+            },
+            zoom: {
+                pan: {
+                    enabled: true,
+                },
+                zoom: {
+                    wheel: {
+                        enabled: true,
+                    },
+                    pinch: {
+                        enabled: false
+                    },
+                    mode: 'xy',
+                },
+                limits: {
+                    x: {min: 'original', max: 'original'},
+                    y: {min: 'original', max: 'original'},
+                }
             }
         }
     }
 
     return (
         <div className={'flex flex-col items-center p-2'}>
-            <div className={'flex flex-col max-w-4xl'}>
-                <div className={'flex flex-row items-center'}>
+            <div className={'flex flex-col'}>
+                <div className={'flex flex-row items-center flex-wrap'}>
                     <Selector attributes={props.chartableAttributes}
                               setAttribute={(event: SelectChangeEvent) => {
                                   setDepAttr(event.target.value);
@@ -172,6 +202,7 @@ export const FabricChart = (props: FabricChartProps) => {
                               currentAttribute={indAttr}
                               label={"X Axis"}
                               metric={props.metric}
+                              disabled={true}
                     />
                 </div>
                 <Scatter data={data} options={chartOptions}/>

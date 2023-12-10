@@ -53,10 +53,10 @@ export const FabricModal = (props: FabricModalProps) => {
                     </Typography>
                     <Grid container spacing={1}>
                         {Object.entries(props.fabric).map(([key, value]) => (
-                            <Grid item xs={6} key={key}>
+                            key != 'id' && (<Grid item xs={6} key={key}>
                                 <Typography variant="subtitle1">{titleMap[key]}</Typography>
                                 <Typography variant="body1">{value.toString()}</Typography>
-                            </Grid>
+                            </Grid>)
                         ))}
                     </Grid>
                 </Box>
