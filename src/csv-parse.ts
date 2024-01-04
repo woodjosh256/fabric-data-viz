@@ -22,8 +22,6 @@ export type Fabric = {
     colorCount: number;
 };
 
-// export const fabricAttributeOrder: string[] = ["name", "brand", "line", "construction", "fabricWeight", "tearStrengthWarp", "tearStrengthFill", "averageTearStrength", "waterproof", "abrasion", "width", "price", "filmBacking", "carbonOffset", "laminatedMaterial", "handFeel", "recycled"];
-
 const parseFabricDataCSV = (csv: string): Fabric[] => {
     const lines = csv.trim().split('\n');
     // const headers = lines[0].split(',');

@@ -49,7 +49,6 @@ export const FabricTable = (props: FabricTableProps) => {
         { field: 'printable', headerName: 'Polyester face (good for sublimation printing)', width: 200 },
         { field: 'colorCount', headerName: '# of Colors Available', width: 200 }
     ]
-    // const VISIBLE_COLUMNS = ['line', 'name', 'fabricWeight', 'abrasion', 'averageTearStrength', 'waterproof', 'recycled'];
 
 
     const gridToolbar = () => <CustomGridToolbar metric={props.metric} setMetric={props.setMetric} />;
