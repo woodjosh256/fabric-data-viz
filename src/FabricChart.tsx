@@ -198,14 +198,14 @@ export const FabricChart = (props: FabricChartProps) => {
                               metric={props.metric}
                     />
                     <p>vs</p>
-                    <Selector attributes={["fabricWeight"]}
+                    <Selector attributes={props.chartableAttributes}
                               setAttribute={(event: SelectChangeEvent) => {
                                   setIndAttr(event.target.value);
                               }}
                               currentAttribute={indAttr}
                               label={"X Axis"}
                               metric={props.metric}
-                              disabled={true}
+                              disabled={false}
                     />
                 </div>
                 <p className={'text-center'}>Scroll to zoom. Click on data point for more info.</p>

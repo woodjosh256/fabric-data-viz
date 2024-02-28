@@ -30,7 +30,7 @@ function App() {
             <FabricModal fabric={modalFabric} metric={metric} open={modalOpen} close={closeFabricModal}/>
             <FabricChart metric={metric} fabrics={getFabricData()}
                          openFabricModal={openFabricModal}
-                         chartableAttributes={["averageTearStrength", "abrasion"]} />
+                         chartableAttributes={["averageTearStrength", "abrasion", "fabricWeight"]} />
             <FabricTable metric={metric} setMetric={setMetric} fabrics={getFabricData()} />
         </div>
     )
