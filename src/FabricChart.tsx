@@ -198,7 +198,7 @@ export const FabricChart = (props: FabricChartProps) => {
                               metric={props.metric}
                     />
                     <p>vs</p>
-                    <Selector attributes={props.chartableAttributes}
+                    <Selector attributes={["fabricWeight"]}
                               setAttribute={(event: SelectChangeEvent) => {
                                   setIndAttr(event.target.value);
                               }}

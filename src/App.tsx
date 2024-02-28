@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react'
-import './App.css'
 import {Fabric, getFabricData} from "./csv-parse.ts";
 import {FabricTable} from "./fabric-table.tsx";
 import {FabricChart} from "./FabricChart.tsx";
@@ -31,7 +30,7 @@ function App() {
             <FabricModal fabric={modalFabric} metric={metric} open={modalOpen} close={closeFabricModal}/>
             <FabricChart metric={metric} fabrics={getFabricData()}
                          openFabricModal={openFabricModal}
-                         chartableAttributes={["fabricWeight", "averageTearStrength", "abrasion", "colorCount"]} />
+                         chartableAttributes={["averageTearStrength", "abrasion"]} />
             <FabricTable metric={metric} setMetric={setMetric} fabrics={getFabricData()} />
         </div>
     )
